@@ -43,7 +43,7 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font-body);
-  background: #1A0E08;
+  background: #F5EDD8;
   color: var(--text-dark);
   min-height: 100vh;
   overflow-x: hidden;
@@ -55,9 +55,8 @@ body {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(139,0,0,0.15) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(200,150,12,0.08) 0%, transparent 50%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    radial-gradient(ellipse at 20% 50%, rgba(139,0,0,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(200,150,12,0.05) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
@@ -80,15 +79,15 @@ body {
 .site-header h1 {
   font-family: var(--font-calligraphy);
   font-size: clamp(1.6rem, 5vw, 2.4rem);
-  color: var(--gold-light);
-  text-shadow: 0 0 30px rgba(212,175,55,0.5), 0 2px 4px rgba(0,0,0,0.8);
+  color: var(--red);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.15);
   letter-spacing: 0.02em;
   margin-bottom: 6px;
 }
 .site-header p {
   font-family: var(--font-ui);
   font-size: 0.95rem;
-  color: rgba(212,175,55,0.7);
+  color: var(--brown-light);
 }
 
 /* ===== COUNTER BADGE ===== */
@@ -554,128 +553,14 @@ body {
 }
 .btn-share:hover { transform: translateY(-1px); }
 
-.btn-print {
-  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-  color: var(--cream);
-  border: none;
-  border-radius: 6px;
-  padding: 12px 24px;
-  font-family: var(--font-ui);
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex; align-items: center; gap: 6px;
-}
+
 .btn-print:hover { transform: translateY(-1px); }
 
-.btn-cert {
-  background: linear-gradient(135deg, #7B1FA2, #4A148C);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 12px 24px;
-  font-family: var(--font-ui);
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex; align-items: center; gap: 6px;
-}
-.btn-cert:hover { transform: translateY(-1px); }
 
-/* ===== CERTIFICATE MODAL ===== */
-.cert-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(10,5,2,0.95);
-  z-index: 1100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-.cert-overlay.show { opacity: 1; pointer-events: all; }
 
-.cert-container {
-  max-width: 600px;
-  width: 100%;
-  text-align: center;
-}
-.cert-canvas-wrapper {
-  background: white;
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow: 0 0 0 3px var(--gold), 0 30px 80px rgba(0,0,0,0.8);
-  margin-bottom: 20px;
-}
-canvas#certCanvas {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-.cert-actions {
-  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
-}
-.btn-download-cert {
-  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-  color: var(--cream);
-  border: none;
-  border-radius: 6px;
-  padding: 13px 30px;
-  font-family: var(--font-ui);
-  font-size: 1rem;
-  cursor: pointer;
-}
-.btn-close-cert {
-  background: rgba(255,255,255,0.1);
-  color: var(--cream);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 6px;
-  padding: 13px 30px;
-  font-family: var(--font-ui);
-  font-size: 1rem;
-  cursor: pointer;
-}
 
-/* ===== FOOTER ===== */
-footer {
-  text-align: center;
-  margin-top: 40px;
-  animation: fadeUp 1s ease both 0.6s;
-}
-footer {
-  margin-top: 0 !important;
-}
-.footer-inner {
-  background: rgba(10,5,2,0.85);
-  border-top: 2px solid var(--gold);
-  padding: 24px 20px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-.bahrain-flag-mini {
-  width: 36px; height: 24px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-}
-.footer-text {
-  font-family: var(--font-calligraphy);
-  font-size: 1.2rem;
-  color: var(--gold-light);
-  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
-  font-weight: 700;
-  margin: 0;
-}
-.footer-copy {
-  font-family: var(--font-ui);
-  font-size: 0.85rem;
-  color: rgba(212,175,55,0.7);
-  margin: 0;
-}
+
+
 
 /* ===== PRINT STYLES ===== */
 @media print {
@@ -708,13 +593,13 @@ footer {
 
   .corner { width: 50px; height: 50px; }
   .modal-actions { flex-direction: column; }
-  .btn-close-modal, .btn-share, .btn-print, .btn-cert { width: 100%; justify-content: center; }
+  .btn-close-modal, .btn-share, .btn-print { width: 100%; justify-content: center; }
 }
 
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #1A0E08; }
-::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+::-webkit-scrollbar-track { background: #F5EDD8; }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
 </style>
 </head>
 <body>
@@ -851,18 +736,7 @@ footer {
     </form>
   </div>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-inner">
-      <svg class="bahrain-flag-mini" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg">
-        <rect width="24" height="16" fill="white"/>
-        <polygon points="7,0 24,0 24,16 7,16 10,14 7,12 10,10 7,8 10,6 7,4 10,2" fill="#CE1126"/>
-        <rect width="7" height="16" fill="white"/>
-      </svg>
-      <p class="footer-text">بيان الولاء والوفاء - مملكة البحرين</p>
-      <p class="footer-copy">© <span id="currentYear"></span> جميع الحقوق محفوظة</p>
-    </div>
-  </footer>
+
 
 </div>
 
@@ -882,12 +756,7 @@ footer {
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         مشاركة واتساب
       </button>
-      <button class="btn-print" onclick="window.print()">
-        🖨️ طباعة
-      </button>
-      <button class="btn-cert" id="genCertBtn">
-        🏅 شهادة المشاركة
-      </button>
+
     </div>
   </div>
 </div>
@@ -905,15 +774,8 @@ footer {
   </div>
 </div>
 
-<!-- CERTIFICATE MODAL -->
-<div class="cert-overlay" id="certModal">
-  <div class="cert-container">
-    <div class="cert-canvas-wrapper">
-      <canvas id="certCanvas" width="800" height="600"></canvas>
-    </div>
+
     <div class="cert-actions">
-      <button class="btn-download-cert" id="downloadCertBtn">⬇ تحميل الشهادة</button>
-      <button class="btn-close-cert" onclick="closeModal('certModal')">إغلاق</button>
     </div>
   </div>
 </div>
@@ -1091,6 +953,14 @@ document.getElementById('pledgeForm').addEventListener('submit', async function(
   );
   if (!phoneValid) errors.push('رقم الهاتف: يرجى إدخال رقم صحيح أو تركه فارغاً');
 
+  // Check duplicate phone
+  if (phone && submittedPhones.has(phone)) {
+    errors.push('رقم الهاتف: تم التسجيل بهذا الرقم مسبقاً');
+    showFieldError(document.getElementById('phoneInput'), document.getElementById('phoneError'), true);
+    document.getElementById('phoneError').textContent = 'تم التسجيل بهذا الرقم مسبقاً';
+    document.getElementById('phoneError').classList.add('show');
+  }
+
   // Show validation summary
   if (errors.length > 0) {
     validList.innerHTML = errors.map(e => `<li>${e}</li>`).join('');
@@ -1129,6 +999,7 @@ document.getElementById('pledgeForm').addEventListener('submit', async function(
     if (data.success) {
       isSubmitted = true;
       submittedName = primaryName;
+      if (phone) submittedPhones.add(phone); // prevent duplicate
       btn.querySelector('.btn-label').textContent = '✓ تم الإرسال';
       btn.classList.remove('loading');
 
@@ -1143,7 +1014,7 @@ document.getElementById('pledgeForm').addEventListener('submit', async function(
 
       // Setup share button
       document.getElementById('shareWhatsappBtn').onclick = shareWhatsapp;
-      document.getElementById('genCertBtn').onclick = () => generateCertificate(primaryName);
+      
 
     } else {
       throw new Error(data.message || 'خطأ غير معروف');
@@ -1171,7 +1042,7 @@ function closeModal(id) {
 }
 
 // Close on overlay click
-document.querySelectorAll('.modal-overlay, .cert-overlay').forEach(overlay => {
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', function(e) {
     if (e.target === this) closeModal(this.id);
   });
@@ -1186,147 +1057,6 @@ function shareWhatsapp() {
   window.open(url, '_blank');
 }
 
-/* =============================================
-   CERTIFICATE GENERATOR
-   ============================================= */
-function generateCertificate(name) {
-  closeModal('successModal');
-  showModal('certModal');
-
-  const canvas = document.getElementById('certCanvas');
-  const ctx = canvas.getContext('2d');
-  const W = 800, H = 600;
-  canvas.width = W; canvas.height = H;
-
-  // Background - parchment
-  const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-  bgGrad.addColorStop(0, '#FEFAF0');
-  bgGrad.addColorStop(0.5, '#FDF5E0');
-  bgGrad.addColorStop(1, '#F5E8CC');
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, W, H);
-
-  // Red top banner
-  const redGrad = ctx.createLinearGradient(0, 0, 0, 120);
-  redGrad.addColorStop(0, '#8B0000');
-  redGrad.addColorStop(1, '#6B0000');
-  ctx.fillStyle = redGrad;
-  ctx.fillRect(0, 0, W, 120);
-
-  // Gold borders
-  ctx.strokeStyle = '#C8960C';
-  ctx.lineWidth = 3;
-  ctx.strokeRect(15, 15, W - 30, H - 30);
-  ctx.lineWidth = 1;
-  ctx.strokeRect(22, 22, W - 44, H - 44);
-
-  // Bahrain flag in banner
-  ctx.fillStyle = 'white';
-  ctx.fillRect(50, 20, 90, 80);
-  ctx.fillStyle = '#CE1126';
-  ctx.beginPath();
-  ctx.moveTo(80, 20); ctx.lineTo(140, 20); ctx.lineTo(140, 100);
-  ctx.lineTo(80, 100); ctx.lineTo(97, 90); ctx.lineTo(80, 80);
-  ctx.lineTo(97, 70); ctx.lineTo(80, 60); ctx.lineTo(97, 50);
-  ctx.lineTo(80, 40); ctx.lineTo(97, 30); ctx.closePath();
-  ctx.fill();
-
-  // Title in banner
-  ctx.fillStyle = '#D4AF37';
-  ctx.font = 'bold 32px "Scheherazade New", serif';
-  ctx.textAlign = 'center';
-  ctx.direction = 'rtl';
-  ctx.fillText('شهادة مشاركة', W / 2, 65);
-
-  ctx.fillStyle = 'rgba(255,255,255,0.7)';
-  ctx.font = '16px "Noto Naskh Arabic", serif';
-  ctx.fillText('بيان الولاء والوفاء - مملكة البحرين', W / 2, 95);
-
-  // Decorative divider
-  ctx.strokeStyle = '#C8960C';
-  ctx.lineWidth = 1;
-  const grd = ctx.createLinearGradient(50, 0, W - 50, 0);
-  grd.addColorStop(0, 'transparent');
-  grd.addColorStop(0.5, '#C8960C');
-  grd.addColorStop(1, 'transparent');
-  ctx.strokeStyle = grd;
-  ctx.beginPath();
-  ctx.moveTo(50, 140); ctx.lineTo(W - 50, 140);
-  ctx.stroke();
-
-  // Certificate body text
-  ctx.fillStyle = '#3B2A1A';
-  ctx.font = '20px "Amiri", serif';
-  ctx.textAlign = 'center';
-  ctx.direction = 'rtl';
-  ctx.fillText('يُشهد بأن', W / 2, 200);
-
-  // Name
-  ctx.fillStyle = '#8B0000';
-  ctx.font = 'bold 36px "Scheherazade New", serif';
-  ctx.fillText(name, W / 2, 260);
-
-  // Gold underline for name
-  const nameWidth = ctx.measureText(name).width;
-  ctx.strokeStyle = '#C8960C';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(W/2 - nameWidth/2 - 20, 275);
-  ctx.lineTo(W/2 + nameWidth/2 + 20, 275);
-  ctx.stroke();
-
-  ctx.fillStyle = '#3B2A1A';
-  ctx.font = '20px "Amiri", serif';
-  ctx.fillText('قد وقّع على بيان تأييد وولاء لجلالة الملك', W / 2, 320);
-
-  ctx.fillStyle = '#C8960C';
-  ctx.font = 'bold 22px "Scheherazade New", serif';
-  ctx.fillText('حمد بن عيسى آل خليفة - ملك مملكة البحرين', W / 2, 365);
-
-  // Date
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('ar-BH', { year: 'numeric', month: 'long', day: 'numeric' });
-  ctx.fillStyle = '#5C3D1E';
-  ctx.font = '18px "Noto Naskh Arabic", serif';
-  ctx.fillText(`بتاريخ: ${dateStr}`, W / 2, 420);
-
-  // Bottom divider
-  ctx.strokeStyle = grd;
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(50, 460); ctx.lineTo(W - 50, 460);
-  ctx.stroke();
-
-  // Footer
-  ctx.fillStyle = '#8B0000';
-  ctx.font = '16px "Noto Naskh Arabic", serif';
-  ctx.fillText('بيان الولاء والوفاء - مملكة البحرين', W / 2, 490);
-
-  // Corner stars
-  [[30, 30], [W-30, 30], [30, H-30], [W-30, H-30]].forEach(([x, y]) => {
-    ctx.fillStyle = '#C8960C';
-    ctx.font = '20px serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('✦', x, y + 7);
-  });
-
-  // Download button
-  document.getElementById('downloadCertBtn').onclick = () => {
-    const link = document.createElement('a');
-    link.download = `شهادة-${name.replace(/\s/g,'-')}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  };
-}
-
-/* =============================================
-   PRINT
-   ============================================= */
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-    closeModal('successModal');
-  }
-});
 </script>
 
 </body>
