@@ -786,7 +786,7 @@ body {
    ============================================= */
 const CONFIG = {
   // !! ضع رابط Google Apps Script هنا !!
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbz207mUgiApv2fAOCyBDHnyuo4hxv8D_cZk_WPVlHzCRTXDDdGw0Etc4j7StRKDM-CD/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzs2KD-GPFwY8COS8QyJlfMHTFrW_U6RrTHrzp-_9KgwTyYIJsEuyzIVKC9FK_u58U-/exec',
   MAX_EXTRA_NAMES: 4,
   COUNTER_REFRESH_MS: 60000
 };
@@ -987,13 +987,18 @@ document.getElementById('pledgeForm').addEventListener('submit', async function(
   btn.querySelector('.btn-label').textContent = 'جارٍ الإرسال...';
 
   try {
+    // Use form submission method to bypass CORS
+    const formData = new FormData();
+    formData.append('payload', JSON.stringify(payload));
+
     const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }
     });
-    // no-cors returns opaque response, treat as success
+
+    // no-cors = opaque response, assume success
     const data = { success: true, message: 'تم الإرسال', total: null };
 
     if (data.success) {
