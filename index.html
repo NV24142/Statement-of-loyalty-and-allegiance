@@ -781,44 +781,31 @@ body {
 </div>
 
 <script>
-/* =============================================
-   CONFIGURATION
-   ============================================= */
+/* CONFIG */
 const CONFIG = {
-  // !! ضع رابط Google Apps Script هنا !!
   APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzCNhUpkZquiEGzUCdQ6w0fiaVHFghBnqmoqSS1VDLiClA5n-aca_KtiTSJb6jLRKc1/exec',
   MAX_EXTRA_NAMES: 4,
   COUNTER_REFRESH_MS: 60000
 };
 
-/* =============================================
-   STATE
-   ============================================= */
+/* STATE */
 let extraNameCount = 0;
 let submittedName = '';
 let isSubmitted = false;
+const submittedPhones = new Set();
 
-/* =============================================
-   INIT
-   ============================================= */
+/* INIT */
 document.getElementById('currentYear').textContent = new Date().getFullYear();
 fetchCounter();
 setInterval(fetchCounter, CONFIG.COUNTER_REFRESH_MS);
 
-/* =============================================
-   COUNTER
-   ============================================= */
+/* COUNTER */
 async function fetchCounter() {
   try {
-    const r = await fetch(CONFIG.APPS_SCRIPT_URL + '?action=count', { method: 'GET', mode: 'cors' });
+    const r = await fetch(CONFIG.APPS_SCRIPT_URL + '?action=count');
     const d = await r.json();
-    if (d.total !== undefined) {
-      animateCount(d.total);
-    }
-  } catch {
-    // silently fail - show placeholder
-    document.getElementById('totalCount').textContent = toArabicNumerals(0);
-  }
+    if (d.total !== undefined) animateCount(d.total);
+  } catch { }
 }
 
 function toArabicNumerals(n) {
@@ -828,34 +815,28 @@ function toArabicNumerals(n) {
 function animateCount(target) {
   const el = document.getElementById('totalCount');
   const current = parseInt(el.textContent.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))) || 0;
-  const step = Math.ceil(Math.abs(target - current) / 30);
+  const step = Math.ceil(Math.abs(target - current) / 30) || 1;
   let val = current;
-  const interval = setInterval(() => {
+  const iv = setInterval(() => {
     val = val < target ? Math.min(val + step, target) : Math.max(val - step, target);
     el.textContent = toArabicNumerals(val);
-    if (val === target) clearInterval(interval);
+    if (val === target) clearInterval(iv);
   }, 40);
 }
 
-/* =============================================
-   ADD/REMOVE NAME FIELDS
-   ============================================= */
+/* ADD/REMOVE NAMES */
 document.getElementById('addNameBtn').addEventListener('click', () => {
   if (extraNameCount >= CONFIG.MAX_EXTRA_NAMES) return;
   extraNameCount++;
-
   const container = document.getElementById('extraNamesContainer');
   const div = document.createElement('div');
   div.className = 'extra-name-field';
-  div.dataset.idx = extraNameCount;
   div.innerHTML = `
     <input type="text" class="field-input extra-name-input"
-      placeholder="الاسم الرباعي ${extraNameCount + 1}"
-      autocomplete="off">
-    <button type="button" class="remove-name-btn" onclick="removeExtraField(this)" title="حذف">×</button>
+      placeholder="الاسم الرباعي ${extraNameCount + 1}" autocomplete="off">
+    <button type="button" class="remove-name-btn" onclick="removeExtraField(this)">×</button>
   `;
   container.appendChild(div);
-
   if (extraNameCount >= CONFIG.MAX_EXTRA_NAMES) {
     document.getElementById('addNameBtn').disabled = true;
   }
@@ -867,54 +848,44 @@ function removeExtraField(btn) {
   document.getElementById('addNameBtn').disabled = false;
 }
 
-/* =============================================
-   VALIDATION
-   ============================================= */
+/* VALIDATION */
 function isValidArabicName(val) {
-  const trimmed = val.trim();
-  if (!trimmed) return false;
-  // Arabic letters, spaces, and some diacritics
-  if (!/^[\u0600-\u06FF\u0750-\u077F\s]+$/.test(trimmed)) return false;
-  const words = trimmed.split(/\s+/).filter(w => w.length > 0);
-  return words.length >= 3;
+  const t = val.trim();
+  if (!t) return false;
+  if (!/^[\u0600-\u06FF\u0750-\u077F\s]+$/.test(t)) return false;
+  return t.split(/\s+/).filter(w => w.length > 0).length >= 3;
 }
 
 function isValidBahrainPhone(val) {
-  if (!val.trim()) return true; // optional
-  return /^[3|6]\d{7}$/.test(val.trim());
+  if (!val.trim()) return true;
+  return /^[36]\d{7}$/.test(val.trim());
 }
 
-function showFieldError(inputEl, errorEl, show) {
+function showFieldError(input, errorEl, show) {
   if (show) {
-    inputEl.classList.add('error');
-    inputEl.classList.remove('success');
+    input.classList.add('error');
+    input.classList.remove('success');
     errorEl.classList.add('show');
   } else {
-    inputEl.classList.remove('error');
-    inputEl.classList.add('success');
+    input.classList.remove('error');
+    input.classList.add('success');
     errorEl.classList.remove('show');
   }
 }
 
-// Real-time validation
 document.getElementById('primaryName').addEventListener('blur', function() {
-  const valid = isValidArabicName(this.value);
-  showFieldError(this, document.getElementById('primaryNameError'), !valid && this.value.trim() !== '');
+  if (this.value.trim()) showFieldError(this, document.getElementById('primaryNameError'), !isValidArabicName(this.value));
 });
 
 document.getElementById('phoneInput').addEventListener('blur', function() {
-  const valid = isValidBahrainPhone(this.value);
-  showFieldError(this, document.getElementById('phoneError'), !valid);
+  if (this.value.trim()) showFieldError(this, document.getElementById('phoneError'), !isValidBahrainPhone(this.value));
 });
 
-/* =============================================
-   FORM SUBMIT
-   ============================================= */
+/* FORM SUBMIT */
 document.getElementById('pledgeForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   if (isSubmitted) return;
 
-  // Collect & validate
   const primaryName = document.getElementById('primaryName').value.trim();
   const phone = document.getElementById('phoneInput').value.trim();
   const extraInputs = document.querySelectorAll('.extra-name-input');
@@ -924,46 +895,33 @@ document.getElementById('pledgeForm').addEventListener('submit', async function(
   const validBox = document.getElementById('validationBox');
   const validList = document.getElementById('validationList');
 
-  // Validate primary name
-  const nameValid = isValidArabicName(primaryName);
-  showFieldError(
-    document.getElementById('primaryName'),
-    document.getElementById('primaryNameError'),
-    !nameValid
-  );
-  if (!nameValid) errors.push('الاسم الرباعي: يجب إدخال ثلاثة أسماء على الأقل بالأحرف العربية');
+  if (!isValidArabicName(primaryName)) {
+    showFieldError(document.getElementById('primaryName'), document.getElementById('primaryNameError'), true);
+    errors.push('الاسم الرباعي: يجب إدخال ثلاثة أسماء على الأقل بالأحرف العربية');
+  } else {
+    showFieldError(document.getElementById('primaryName'), document.getElementById('primaryNameError'), false);
+  }
 
-  // Validate extra names
   extraInputs.forEach((inp, i) => {
     if (inp.value.trim() && !isValidArabicName(inp.value)) {
       inp.classList.add('error');
-      errors.push(`الاسم ${i + 2}: يجب أن يكون باللغة العربية وثلاثة أسماء على الأقل`);
-    } else if (inp.value.trim()) {
-      inp.classList.remove('error');
-      inp.classList.add('success');
+      errors.push('الاسم ' + (i + 2) + ': يجب أن يكون بالعربية وثلاثة أسماء على الأقل');
     }
   });
 
-  // Validate phone
-  const phoneValid = isValidBahrainPhone(phone);
-  showFieldError(
-    document.getElementById('phoneInput'),
-    document.getElementById('phoneError'),
-    !phoneValid
-  );
-  if (!phoneValid) errors.push('رقم الهاتف: يرجى إدخال رقم صحيح أو تركه فارغاً');
-
-  // Check duplicate phone
-  if (phone && submittedPhones.has(phone)) {
-    errors.push('رقم الهاتف: تم التسجيل بهذا الرقم مسبقاً');
+  if (!isValidBahrainPhone(phone)) {
     showFieldError(document.getElementById('phoneInput'), document.getElementById('phoneError'), true);
-    document.getElementById('phoneError').textContent = 'تم التسجيل بهذا الرقم مسبقاً';
-    document.getElementById('phoneError').classList.add('show');
+    errors.push('رقم الهاتف: يرجى إدخال رقم صحيح أو تركه فارغاً');
   }
 
-  // Show validation summary
+  if (phone && submittedPhones.has(phone)) {
+    document.getElementById('phoneError').textContent = 'تم التسجيل بهذا الرقم مسبقاً';
+    showFieldError(document.getElementById('phoneInput'), document.getElementById('phoneError'), true);
+    errors.push('رقم الهاتف: تم التسجيل بهذا الرقم مسبقاً');
+  }
+
   if (errors.length > 0) {
-    validList.innerHTML = errors.map(e => `<li>${e}</li>`).join('');
+    validList.innerHTML = errors.map(e => '<li>' + e + '</li>').join('');
     validBox.classList.add('show');
     validBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
@@ -971,121 +929,67 @@ document.getElementById('pledgeForm').addEventListener('submit', async function(
 
   validBox.classList.remove('show');
 
-  // Prepare payload
-  const allNames = [primaryName, ...extraNames];
   const payload = {
-    names: allNames,
+    names: [primaryName, ...extraNames],
     phone: phone ? '+973' + phone : '',
     timestamp: new Date().toISOString(),
     source: 'web'
   };
 
-  // Loading state
   const btn = document.getElementById('submitBtn');
   btn.classList.add('loading');
   btn.disabled = true;
   btn.querySelector('.btn-label').textContent = 'جارٍ الإرسال...';
 
-  // Method: fetch with fallback
-  const sendData = async () => {
-    const url = CONFIG.APPS_SCRIPT_URL;
-    const body = JSON.stringify(payload);
+  let success = false;
 
-    // Try 1: normal fetch
+  // Try 1: normal fetch
+  try {
+    const r = await fetch(CONFIG.APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    const d = await r.json();
+    if (d.success) {
+      success = true;
+      if (d.total) animateCount(d.total);
+    }
+  } catch(e1) {
+    // Try 2: no-cors
     try {
-      const r = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: body,
-        redirect: 'follow'
-      });
-      if (r.ok || r.status === 0) {
-        let d = { success: true };
-        try { d = await r.json(); } catch {}
-        return d;
-      }
-    } catch {}
-
-    // Try 2: no-cors (data saves, response is opaque)
-    try {
-      await fetch(url, {
+      await fetch(CONFIG.APPS_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: body
+        body: JSON.stringify(payload)
       });
-      return { success: true, total: null };
-    } catch {}
+      success = true;
+    } catch(e2) {
+      success = false;
+    }
+  }
 
-    // Try 3: GET with encoded data
-    try {
-      const encoded = encodeURIComponent(body);
-      await fetch(`${url}?data=${encoded}`, { mode: 'no-cors' });
-      return { success: true, total: null };
-    } catch {}
-
-    throw new Error('تعذّر الإرسال');
-  };
-
-  try {
-    const data = await sendData();
+  if (success) {
     isSubmitted = true;
     submittedName = primaryName;
     if (phone) submittedPhones.add(phone);
-
     btn.querySelector('.btn-label').textContent = '✓ تم الإرسال';
     btn.classList.remove('loading');
-
-    if (data.total) animateCount(data.total);
-
     document.getElementById('successModalText').textContent =
-      `تم تسجيل اسم "${primaryName}" في بيان الولاء والوفاء بنجاح. شكراً لك.`;
-
+      'تم تسجيل اسم "' + primaryName + '" في بيان الولاء والوفاء بنجاح. شكراً لك.';
     showModal('successModal');
     document.getElementById('shareWhatsappBtn').onclick = shareWhatsapp;
-
-  } catch (err) {
-    // If CORS error, try with no-cors (data still saves but we assume success)
-    if (err.message.includes('fetch') || err.message.includes('Failed') || err.message.includes('CORS') || err.name === 'TypeError') {
-      try {
-        await fetch(CONFIG.APPS_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-
-        isSubmitted = true;
-        submittedName = primaryName;
-        if (phone) submittedPhones.add(phone);
-
-        btn.querySelector('.btn-label').textContent = '✓ تم الإرسال';
-        btn.classList.remove('loading');
-
-        document.getElementById('successModalText').textContent =
-          `تم تسجيل اسم "${primaryName}" في بيان الولاء والوفاء بنجاح. شكراً لك.`;
-
-        showModal('successModal');
-        document.getElementById('shareWhatsappBtn').onclick = shareWhatsapp;
-
-      } catch (err2) {
-        btn.classList.remove('loading');
-        btn.disabled = false;
-        btn.querySelector('.btn-label').textContent = 'إرسال';
-        document.getElementById('errorModalText').textContent = 'تعذّر الإرسال. تحقق من اتصالك بالإنترنت.';
-        showModal('errorModal');
-      }
-    } else {
-      btn.classList.remove('loading');
-      btn.disabled = false;
-      btn.querySelector('.btn-label').textContent = 'إرسال';
-      document.getElementById('errorModalText').textContent = err.message || 'تعذّر الإرسال.';
-      showModal('errorModal');
-    }
+  } else {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    btn.querySelector('.btn-label').textContent = 'إرسال';
+    document.getElementById('errorModalText').textContent = 'تعذّر الإرسال. يرجى المحاولة مرة أخرى.';
+    showModal('errorModal');
   }
-/* =============================================
-   MODALS
-   ============================================= */
+});
+
+/* MODALS */
 function showModal(id) {
   document.getElementById(id).classList.add('show');
   document.body.style.overflow = 'hidden';
@@ -1095,22 +999,17 @@ function closeModal(id) {
   document.body.style.overflow = '';
 }
 
-// Close on overlay click
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', function(e) {
     if (e.target === this) closeModal(this.id);
   });
 });
 
-/* =============================================
-   WHATSAPP SHARE
-   ============================================= */
+/* WHATSAPP */
 function shareWhatsapp() {
-  const text = `أنا ${submittedName} وقّعت على بيان الولاء والوفاء لجلالة الملك حمد بن عيسى آل خليفة حفظه الله.\n\nانضم إلى البيان:\n${window.location.href}`;
-  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-  window.open(url, '_blank');
+  const text = 'أنا ' + submittedName + ' وقّعت على بيان الولاء والوفاء لجلالة الملك حمد بن عيسى آل خليفة حفظه الله.\n\nانضم إلى البيان:\n' + window.location.href;
+  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
 }
-
 </script>
 
 </body>
