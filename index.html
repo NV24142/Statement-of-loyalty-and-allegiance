@@ -783,7 +783,7 @@ body {
 <script>
 /* CONFIG */
 const CONFIG = {
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzCNhUpkZquiEGzUCdQ6w0fiaVHFghBnqmoqSS1VDLiClA5n-aca_KtiTSJb6jLRKc1/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyyhi6o5oD5ciUH8fbWJ1FBqVPe3PWdTAmRhb-vAMM38KXWOTg4d2ZgZY_2nteAqQ7G/exec',
   MAX_EXTRA_NAMES: 4,
   COUNTER_REFRESH_MS: 60000
 };
@@ -942,32 +942,25 @@ document.getElementById('pledgeForm').addEventListener('submit', async function(
   btn.querySelector('.btn-label').textContent = 'جارٍ الإرسال...';
 
   let success = false;
+  let total = null;
 
-  // Try 1: normal fetch
   try {
-    const r = await fetch(CONFIG.APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    });
+    // GET method - no CORS issues
+    const extra = payload.names.slice(1).join('، ');
+    const url = CONFIG.APPS_SCRIPT_URL
+      + '?action=submit'
+      + '&name='  + encodeURIComponent(payload.names[0])
+      + '&phone=' + encodeURIComponent(payload.phone)
+      + '&extra=' + encodeURIComponent(extra);
+
+    const r = await fetch(url);
     const d = await r.json();
     if (d.success) {
       success = true;
-      if (d.total) animateCount(d.total);
+      total = d.total;
     }
-  } catch(e1) {
-    // Try 2: no-cors
-    try {
-      await fetch(CONFIG.APPS_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      });
-      success = true;
-    } catch(e2) {
-      success = false;
-    }
+  } catch(err) {
+    success = false;
   }
 
   if (success) {
