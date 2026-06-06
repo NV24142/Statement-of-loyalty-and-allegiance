@@ -786,7 +786,7 @@ body {
    ============================================= */
 const CONFIG = {
   // !! ضع رابط Google Apps Script هنا !!
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxWudjTVv2Gx8SuwplkQY1-Wszrxo6z7Udc5JUCXK9amgr_rX3-psO6S1pSMg9lTI-m/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzCNhUpkZquiEGzUCdQ6w0fiaVHFghBnqmoqSS1VDLiClA5n-aca_KtiTSJb6jLRKc1/exec',
   MAX_EXTRA_NAMES: 4,
   COUNTER_REFRESH_MS: 60000
 };
@@ -986,54 +986,103 @@ document.getElementById('pledgeForm').addEventListener('submit', async function(
   btn.disabled = true;
   btn.querySelector('.btn-label').textContent = 'جارٍ الإرسال...';
 
+  // Method: fetch with fallback
+  const sendData = async () => {
+    const url = CONFIG.APPS_SCRIPT_URL;
+    const body = JSON.stringify(payload);
+
+    // Try 1: normal fetch
+    try {
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: body,
+        redirect: 'follow'
+      });
+      if (r.ok || r.status === 0) {
+        let d = { success: true };
+        try { d = await r.json(); } catch {}
+        return d;
+      }
+    } catch {}
+
+    // Try 2: no-cors (data saves, response is opaque)
+    try {
+      await fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: body
+      });
+      return { success: true, total: null };
+    } catch {}
+
+    // Try 3: GET with encoded data
+    try {
+      const encoded = encodeURIComponent(body);
+      await fetch(`${url}?data=${encoded}`, { mode: 'no-cors' });
+      return { success: true, total: null };
+    } catch {}
+
+    throw new Error('تعذّر الإرسال');
+  };
+
   try {
-    // Use form submission method to bypass CORS
-    const formData = new FormData();
-    formData.append('payload', JSON.stringify(payload));
+    const data = await sendData();
+    isSubmitted = true;
+    submittedName = primaryName;
+    if (phone) submittedPhones.add(phone);
 
-    const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify(payload),
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-    });
-
-    // no-cors = opaque response, assume success
-    const data = { success: true, message: 'تم الإرسال', total: null };
-
-    if (data.success) {
-      isSubmitted = true;
-      submittedName = primaryName;
-      if (phone) submittedPhones.add(phone); // prevent duplicate
-      btn.querySelector('.btn-label').textContent = '✓ تم الإرسال';
-      btn.classList.remove('loading');
-
-      // Update counter
-      if (data.total) animateCount(data.total);
-
-      // Personalize success message
-      document.getElementById('successModalText').textContent =
-        `تم تسجيل اسم "${primaryName}" في بيان الولاء والوفاء بنجاح. شكراً لك.`;
-
-      showModal('successModal');
-
-      // Setup share button
-      document.getElementById('shareWhatsappBtn').onclick = shareWhatsapp;
-      
-
-    } else {
-      throw new Error(data.message || 'خطأ غير معروف');
-    }
-  } catch (err) {
+    btn.querySelector('.btn-label').textContent = '✓ تم الإرسال';
     btn.classList.remove('loading');
-    btn.disabled = false;
-    btn.querySelector('.btn-label').textContent = 'إرسال';
-    document.getElementById('errorModalText').textContent =
-      err.message || 'تعذّر إرسال البيانات. يرجى المحاولة مرة أخرى.';
-    showModal('errorModal');
-  }
-});
 
+    if (data.total) animateCount(data.total);
+
+    document.getElementById('successModalText').textContent =
+      `تم تسجيل اسم "${primaryName}" في بيان الولاء والوفاء بنجاح. شكراً لك.`;
+
+    showModal('successModal');
+    document.getElementById('shareWhatsappBtn').onclick = shareWhatsapp;
+
+  } catch (err) {
+    // If CORS error, try with no-cors (data still saves but we assume success)
+    if (err.message.includes('fetch') || err.message.includes('Failed') || err.message.includes('CORS') || err.name === 'TypeError') {
+      try {
+        await fetch(CONFIG.APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        isSubmitted = true;
+        submittedName = primaryName;
+        if (phone) submittedPhones.add(phone);
+
+        btn.querySelector('.btn-label').textContent = '✓ تم الإرسال';
+        btn.classList.remove('loading');
+
+        document.getElementById('successModalText').textContent =
+          `تم تسجيل اسم "${primaryName}" في بيان الولاء والوفاء بنجاح. شكراً لك.`;
+
+        showModal('successModal');
+        document.getElementById('shareWhatsappBtn').onclick = shareWhatsapp;
+
+      } catch (err2) {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        btn.querySelector('.btn-label').textContent = 'إرسال';
+        document.getElementById('errorModalText').textContent = 'تعذّر الإرسال. تحقق من اتصالك بالإنترنت.';
+        showModal('errorModal');
+      }
+    } else {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+      btn.querySelector('.btn-label').textContent = 'إرسال';
+      document.getElementById('errorModalText').textContent = err.message || 'تعذّر الإرسال.';
+      showModal('errorModal');
+    }
+  }
 /* =============================================
    MODALS
    ============================================= */
